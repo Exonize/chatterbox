@@ -1,49 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Chatterbox</title>
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Chatty">
+
+	<meta name="description" content="Simple chat app with no login">
+	<meta name="theme-color" content="#333333">
+
+	<title>Chatty</title>
+
+	<link rel="apple-touch-icon" href="assets/images/icons/icon-152x152.png">
+	<link rel="shortcut icon" href="assets/images/icons/icon-512x512.png" type="image png">
 
 	<link rel="stylesheet" href="/assets/css/style.css">
+	<link rel="manifest" href="/manifest.json">
+
 </head>
 <body>
-	
+
 	<nav>
 		<a href="/" class="siteBrand">
-			<img src="/assets/images/catter.svg" alt="Chatterbox logo" class="siteBrand__logo">
-			Chatterbox
+			<img src="/assets/images/logo.png" alt="Chatterbox logo" class="siteBrand__logo">
 		</a>
+		<button id="butInstall" aria-label="Install" hidden><img src="/assets/images/install.svg"></button>
 	</nav>
 
 	<article class="mainChatView">
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
-		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p>
+		<!-- <p class="mainChatView__me"><span class="mainChatView__name">Brian</span> Wazzaaaaaaa!?</p>
+		<p class="mainChatView__other"><span class="mainChatView__name">Egon</span> Wazzaaaaaaa!?</p> -->
 	</article>
 
 	<article class="chatMessage">
-		<input type="text" class="chatMessage__input" placeholder="What's on your mind?">
-		<button class="chatMessage__button">Send</button>
+		<form class="chatMessage__form hidden">
+			<input type="text" class="chatMessage__input" placeholder="Type something...">
+			<button class="chatMessage__button">Send</button>
+		</form>
+
+		<form class="chatMessage__form">
+			<input type="text" class="chatMessage__username" placeholder="Enter your name to join the chat...">
+			<button class="chatMessage__join">Join</button>
+		</form>
 	</article>
 
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="assets/js/install.js"></script>
+
+		<script>
 		var socket = io();
-	</script>
+		var recieve_message	 = new Audio("/assets/media/recieve.mp3")
+		var joined			 = new Audio("/assets/media/recieve.mp3")
+		var chatButton 	= document.getElementsByClassName("chatMessage__button")[0];
+		var chatInput 	= document.getElementsByClassName("chatMessage__input")[0];
+		var chatForm 	= document.getElementsByClassName("chatMessage__form")[0];
+		var joinForm 	= document.getElementsByClassName("chatMessage__form")[1];
+		var username 	= document.getElementsByClassName("chatMessage__username")[0];
+		var name;
+
+		joinForm.addEventListener("submit", function(e) {
+		e.preventDefault();
+		// No Empty Username
+		if (username.value == "") {
+			return;
+		}
+
+			name = username.value;
+			socket.emit("userjoin", name);
+
+			joinForm.classList.add("hidden");
+			chatForm.classList.remove("hidden");
+		});
+
+
+		chatForm.addEventListener("submit", function(e) {
+		e.preventDefault();
+		// No Empty Messages
+		if (chatInput.value == "") {
+			return;
+		}
+
+		// Emoticon Filter
+		chatInput.value = chatInput.value.replace(":)", "<img src='/assets/images/emojis/smile.png' class='emoticons'>");
+		chatInput.value = chatInput.value.replace(":(", "<img src='/assets/images/emojis/sad.png'	class='emoticons'>");
+		chatInput.value = chatInput.value.replace("<3", "<img src='/assets/images/emojis/heart.png' class='emoticons'>");
+		chatInput.value = chatInput.value.replace("-.-", "<img src='/assets/images/emojis/bruh.png' class='emoticons'>");
+		chatInput.value = chatInput.value.replace(":P", "<img src='/assets/images/emojis/weird.png' class='emoticons'>");
+
+		let time = Date.now();
+		socket.send({ msg: chatInput.value, timestamp: time, username: name});
+
+		let p = document.createElement("p");
+		p.className = "mainChatView__me";
+		p.innerHTML = chatInput.value;
+
+		let small = document.createElement("small");
+		small.className = "timestamp right hidden";
+		small.innerText = new Date(time).getHours() + ':' + new Date(time).getMinutes();
+
+		let chatView = document.getElementsByClassName("mainChatView")[0];
+		chatView.appendChild(small)
+		chatView.appendChild(p);
+
+		chatView.scrollTop = chatView.scrollHeight;
+		chatInput.value = "";
+		});
+
+		socket.on("message", function(msg) {
+		console.log(msg);
+		let p = document.createElement("p");
+		p.className = "mainChatView__other";
+
+		let small_name = document.createElement("small");
+		small_name.className = "mainChatView__name";
+		small_name.innerText = msg.username;
+
+		p.appendChild(small_name);
+		p.innerHTML += msg.msg;
+
+		let small = document.createElement("small");
+		small.className = "timestamp left hidden";
+		small.innerText = new Date(msg.timestamp).getHours() + ':' + new Date(msg.timestamp).getMinutes();
+
+		let chatView = document.getElementsByClassName("mainChatView")[0];
+		chatView.appendChild(small)
+		chatView.appendChild(p);
+		recieve_message.play();
+		chatView.scrollTop = chatView.scrollHeight
+		})
+
+		socket.on("userjoin", function(msg) {
+			let chatView = document.getElementsByClassName("mainChatView")[0];
+			let small = document.createElement("small");
+			small.className = "timestamp center";
+			small.innerText = `${msg} has joined the chat`;
+
+			chatView.appendChild(small);
+			joined.play();
+			chatView.scrollTop = chatView.scrollHeight;
+		});
+		</script>
+
+		<script>
+		if("serviceWorker" in navigator) {
+			window.addEventListener("load", function() {
+				navigator.serviceWorker.register("/service-worker.js")
+					.then(function(reg) {
+						console.log("Service Worker Registered", reg);
+					})
+					.catch(function(err) {
+						console.error(err);
+					});
+			});
+		}
+		</script>
+
 </body>
 </html>

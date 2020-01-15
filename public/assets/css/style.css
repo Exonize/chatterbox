@@ -1,7 +1,7 @@
 body {
-	background-color: hsla(210, 50%, 50%);
-	color: hsl(0, 0%, 96%);
-	font-family: "Comic Sans MS";
+	background-color: #ffffff;
+	color: #ffffff;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	font-size: calc(16px + (21 - 16) * (100vw - 412px) / (1920 - 412));
 	display: grid;
 	grid-template-rows: minmax(2em, 10vh) 85vh 5vh;
@@ -12,16 +12,17 @@ body {
 	text-decoration: none;
 	color: hsl(0, 0%, 96%);
 	font-size: 200%;
+	
 }
 
 .siteBrand__logo {
-	width: 60px;
-	height: auto;
+	padding-top: 15px;
+	width: 18%;
 }
 
 .mainChatView {
 	height: 100%;
-	background-color: hsl(0, 0%, 96%);
+	background-color: #f5f5f5;
 	overflow-y: scroll;
 	color: hsl(0, 0%, 6%);
 	padding: 0.4em 1em;
@@ -30,46 +31,104 @@ body {
 
 .mainChatView__me,
 .mainChatView__other {
-	border-radius: 8px;
+	border-radius: 32px;
 	padding: .4em 1em;
+	font-weight: 400;
 }
 
 .mainChatView__me {
 	text-align: right;
-	background-color: lightblue;
-	border-bottom-right-radius: 0;
+	background-color: #333333;
+	margin-top: 2px;
+	color: white;
 }
 
 .mainChatView__other {
 	text-align: left;
-	background-color: lightgray;
-	border-top-left-radius: 0;
+	background-color: #FFFFFF;
+	margin-top: 2px;
 }
 
 .mainChatView__name {
 	display: block;
 	font-size: 50%;
+	font-weight: bold;
 }
 
-.chatMessage {
+.chatMessage__form {
 	display: flex;
 	align-items: center;
 }
 
 .chatMessage__input,
-.chatMessage__button {
+.chatMessage__button, 
+.chatMessage__username, 
+.chatMessage__join {
 	font-family: inherit;
 	font-size: inherit;
 	padding: .3em .7em;
 }
 
-.chatMessage__input {
+.chatMessage__input,
+.chatMessage__username {
 	flex: 4;
 }
 
-.chatMessage__button {
+.chatMessage__button,
+.chatMessage__join {
 	flex: 1;
-	background-color: hsl(120, 50%, 30%);
+	background-color: #333333;
 	color: hsl(0, 0%, 96%);
+	border: none;
+}
+
+  @media only screen 
+	and (min-device-width : 375px) 
+	and (max-device-width : 667px) { .siteBrand__logo {
+	width: 60%; /* The width is 100%, when the viewport is 800px or smaller */
+  }}
+
+
+  .emoticons {
+	  height: 1em;
+	  width: auto;
+  }
+
+  .timestamp {
+	  color: rgb(185, 184, 184);
+	  font-size: 12px;
+	  display: block;
+  }
+
+  .timestamp.right {
+	text-align: right;
+	padding-right: 15px;
+  }
+
+  .timestamp.left {
+	text-align: left;
+	padding-left: 15px;
+  }
+
+  .timestamp.center {
+	  text-align: center;
+	  padding: 10px;
+  }
+
+  .hidden{
+	  display: none;
+	  visibility: hidden;
+	  width: 1px;
+	  height: 1px;
+	  pointer-events: none;
+  }
+
+  .mainChatView__name {
+	  color: rgb(185, 184, 184);
+	  font-size: 12px;
+  }
+
+  #butInstall {
+	background: none;
 	border: none;
 }
